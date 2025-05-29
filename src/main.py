@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -21,8 +21,12 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # Setup templates
 templates = Jinja2Templates(directory="templates")
 
+@app.get('/favicon.ico', response_class=FileResponse)
+async def favicon():
+    return FileResponse('static/favicon.ico')
+
 @app.get("/", response_class=HTMLResponse)
-async def home(request):
+async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 @app.post("/process-video")
